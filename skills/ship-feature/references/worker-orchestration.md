@@ -23,7 +23,7 @@ a **stack of open PRs**, not via merges into a shared branch:
   (`feat-N → … → feat-1 → base → <integration-branch>`). **The skill never merges anything.**
 
 This is the whole point: `<integration-branch>` stays untouched until the feature is genuinely
-done — no half-feature specs or slices land without a review cycle.
+done — no half-feature specs or tickets land without a review cycle.
 
 ## Base-branch selection (how the stack is built)
 

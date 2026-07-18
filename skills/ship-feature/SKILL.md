@@ -3,11 +3,11 @@ name: ship-feature
 description: >-
   Use when you want to run a WHOLE feature end-to-end rather than one isolated step — e.g.
   "run my feature workflow", "kick off the pipeline", "start feature X end to end", "grill me
-  then make the PRD and issues", "dispatch workers on the ready issues", or "finish/verify this
-  PR". A thin conductor that sequences grill → PRD → issues → triage, then dispatches local
-  worker subagents that implement the ready issues as a stack of open PRs (each: TDD → review →
+  then make the spec and tickets", "dispatch workers on the ready tickets", or "finish/verify this
+  PR". A thin conductor that sequences grill → spec → tickets → triage, then dispatches local
+  worker subagents that implement the ready tickets as a stack of open PRs (each: TDD → review →
   verify — never merging). Do NOT use for a single step a dedicated skill already owns (writing
-  just a PRD, only slicing issues, a one-shot review, debugging one bug, a lone TDD fix).
+  just a spec, only slicing tickets, a one-shot review, debugging one bug, a lone TDD fix).
 ---
 
 # Ship Feature
@@ -33,22 +33,22 @@ integration branch stays untouched until the feature is genuinely done.
 This conductor does almost nothing itself, so it only runs end-to-end if the skills it drives
 are installed. **At the start of a run, confirm each capability below resolves to an available
 skill. If a required one is missing, STOP and tell the user what to install** (see
-[`setup.sh`](../../setup.sh) / the repo README) — don't begin a run you can't finish.
+[`install.sh`](../../scripts/install.sh) / the repo README) — don't begin a run you can't finish.
 
 | Capability (required) | Reference implementation |
 |---|---|
 | Grill a plan against domain docs | `grill-with-docs` |
-| Synthesize a PRD onto the tracker | `to-prd` |
-| Slice a PRD into tracer-bullet issues, marking each HITL/AFK | `to-issues` |
-| Triage issues + write agent briefs | `triage` (+ its per-repo config, e.g. `setup-matt-pocock-skills`) |
+| Synthesize a spec onto the tracker | `to-spec` |
+| Break a spec into tracer-bullet tickets, marking each HITL/AFK | `to-tickets` |
+| Triage tickets + write agent briefs | `triage` (+ its per-repo config, e.g. `setup-matt-pocock-skills`) |
 | Test-drive an implementation | `tdd` |
+| Correctness/security code review (Opus subagent, diff vs base) | `code-reviewer` — bundled in this repo (from [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills), MIT) |
 | Isolated worktrees + parallel subagent fan-out | `superpowers:using-git-worktrees`, `superpowers:dispatching-parallel-agents` |
 | Engage critically with review feedback | `superpowers:receiving-code-review` |
 | Local worker dispatch | the **Agent tool** (built-in) — workers are local subagents, *not* cloud agents |
 
 | Capability (recommended — degrades gracefully) | Reference implementation | Fallback if absent |
 |---|---|---|
-| Correctness/security code review | a `code-reviewer` skill/subagent (Opus) | a plain review subagent over the diff |
 | Commit + push + open PR non-interactively | `commit-commands:commit-push-pr` | plain `git` + `gh pr create` |
 | Flag over-engineering | `ponytail-review` | skip the simplicity flag pass |
 | Apply reuse/simplification cleanups | `simplify` (built-in) | manual cleanup in the review loop |
@@ -63,7 +63,7 @@ calls silently fail to resolve.
 The engineering skills read **per-repo config** (issue tracker, triage-label vocabulary,
 domain-doc layout). If that config is missing, **ask the user to run their toolchain's setup
 command and pause until they confirm** — many setup skills are user-invoked only, so you can't
-run them yourself. Without it, PRD/issues/triage fall back to defaults and the ready/human roles
+run them yourself. Without it, spec/tickets/triage fall back to defaults and the ready/human roles
 won't map to your tracker's real labels.
 
 ## Which phase are you in?
@@ -72,8 +72,8 @@ Read the request and pick the entry point — don't assume "kickoff" just becaus
 
 | If… | Go to |
 |---|---|
-| New feature — no PRD or issues yet | **Phase A — Kickoff** (from step 1) |
-| PRD/issues exist but no workers running | **Phase A from step 3** (ensure `base` → briefs → dispatch) |
+| New feature — no spec or issues yet | **Phase A — Kickoff** (from step 1) |
+| spec/issues exist but no workers running | **Phase A from step 3** (ensure `base` → briefs → dispatch) |
 | Pointed at an existing PR / one issue: review, finish, or verify it | **Phase C — Finish** |
 | A `ready-for-human` issue flagged for you to drive | **HITL handling** |
 | Relaunch / continue an existing feature's workers | **Phase A step 6** (re-dispatch on the existing stack) |
@@ -89,7 +89,7 @@ steps to ask permission.** The only pauses are the **preflight** and the **grill
 
 **Grilling (step 1) is the SINGLE alignment gate** — where the user shapes the work and you get
 on the same page. Run it thoroughly; don't auto-answer for them. **Once grilling is done, steps
-2–6 run autonomously** — don't ask the user to approve the PRD, the test seams, the slice
+2–6 run autonomously** — don't ask the user to approve the spec, the test seams, the ticket
 breakdown, the HITL/AFK split, or publishing. The reversibility gate is the safety net: anything
 uncertain or irreversible becomes a `ready-for-human` issue (surfaced later), so you never
 auto-ship a risky call. The only human touchpoints after grilling are `ready-for-human` issues
@@ -98,21 +98,22 @@ and the **final stack review**.
 1. **Grill** (`grill-with-docs`) — pressure-test the idea against the domain model and docs;
    sharpen terminology. It writes spec context (domain docs, ADRs) into the working tree — that
    context rides onto `base` in step 3, so every worker inherits it.
-2. **PRD** (`to-prd`) — synthesize the agreed design into a PRD on the tracker. It would normally
+2. **spec** (`to-spec`) — synthesize the agreed design into a spec on the tracker. It would normally
    quiz the user on test seams / modules — **don't pause**; decide them yourself from the grilled
-   design + codebase and let it publish. (The PRD issue's id names `base`.)
+   design + codebase and let it publish. (The spec issue's id names `base`.)
 3. **Create the feature base branch** off `<integration-branch>`, named after the feature per the
    repo convention. Bring the grill's still-uncommitted spec docs onto it and commit + push.
    **`base` carries the spec/ADR context and is the bottom of the stack** — the first worker
    branches from it; later workers stack on prior workers' branches. **`base` is pushed but NEVER
    merged** until the whole feature is done and reviewed. Record its name.
-4. **Slice** (`to-issues`) — break the PRD into tracer-bullet vertical slices (parented to the
-   PRD). This step **marks each slice HITL or AFK** (prefer AFK) and publishes AFK slices with the
-   `ready-for-agent` role. **Decide the breakdown and the split yourself — don't pause.**
+4. **Break into tickets** (`to-tickets`) — break the spec into tracer-bullet tickets (vertical
+   slices, parented to the spec). This step **marks each ticket HITL or AFK** (prefer AFK) and
+   publishes AFK tickets with the `ready-for-agent` role. **Decide the breakdown and the split
+   yourself — don't pause.**
 5. **Triage → agent briefs** (`triage`) — for each `ready-for-agent` issue, post an **agent
    brief**: the durable, behavioral, file-path-free contract the worker works from — and state
    its **base = its assigned stack branch** (never `<integration-branch>`) and that the worker
-   **must not merge**. Confirm HITL slices carry `ready-for-human`. Default to `ready-for-human`
+   **must not merge**. Confirm HITL tickets carry `ready-for-human`. Default to `ready-for-human`
    when unsure. See [`references/afk-handoff.md`](references/afk-handoff.md).
 6. **Dispatch the local workers** (only after step 5's briefs are posted). Following
    [`references/worker-orchestration.md`](references/worker-orchestration.md): build the stack
@@ -169,7 +170,7 @@ verified, it rejoins the stack.
   worktree-branch rules live in the repo's `CLAUDE.md` / contributing guide. The playbook points
   at them so this skill never drifts out of sync with project policy.
 - **Thin & composable.** Delegate to each skill; never reimplement one. Tempted to inline what
-  `to-issues` or `tdd` already does? Stop and invoke it.
+  `to-tickets` or `tdd` already does? Stop and invoke it.
 - **Workers run locally, never on the cloud.** They are subagents in *this* session, each in its
   own worktree — so they have the working tree, write permissions, and full context. Don't use a
   cloud/cron routine (it lacks all three).

@@ -1,19 +1,19 @@
 # AFK handoff: roles, classification, and the agent brief
 
 How an issue becomes safe for an unattended agent to pick up, and what contract it works from.
-This aligns with the slicing (`to-issues`) and `triage` skills — it doesn't replace them, it just
-records how this pipeline leans on them.
+This aligns with the ticketing (`to-tickets`) and `triage` skills — it doesn't replace them, it
+just records how this pipeline leans on them.
 
 ## HITL vs AFK, and the triage roles they map to
 
-The slicing step marks every vertical slice as **HITL** (needs human interaction — an
+The ticketing step marks every ticket (vertical slice) as **HITL** (needs human interaction — an
 architectural decision, a design review, a judgment call) or **AFK** (can be implemented without
 human interaction — the final merge is always the human's). **Prefer AFK where possible**; reach
 for HITL only when human interaction is genuinely required.
 
-Those slice types map onto the canonical **triage roles** that live on the issue tracker:
+Those ticket types map onto the canonical **triage roles** that live on the issue tracker:
 
-| Slice type | Triage role | What the pipeline does with it |
+| Ticket type | Triage role | What the pipeline does with it |
 |---|---|---|
 | AFK | `ready-for-agent` | A local worker subagent implements it as an open, stacked PR |
 | HITL | `ready-for-human` | Surfaces it to the user; never auto-implements |

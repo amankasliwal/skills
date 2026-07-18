@@ -14,7 +14,8 @@ native **Claude Code plugin**.
 
 | Skill | What it does |
 |---|---|
-| [`ship-feature`](skills/ship-feature/SKILL.md) | A thin conductor for the whole feature workflow: grill → PRD → issues → triage, then dispatches local worker subagents that implement the ready issues as a **stack of open PRs** (each: TDD → review → verify — never merging). You review the stack and merge. Tracker- and repo-agnostic. |
+| [`ship-feature`](skills/ship-feature/SKILL.md) | A thin conductor for the whole feature workflow: grill → spec → tickets → triage, then dispatches local worker subagents that implement the ready tickets as a **stack of open PRs** (each: TDD → review → verify — never merging). You review the stack and merge. Tracker- and repo-agnostic. |
+| [`code-reviewer`](skills/code-reviewer/SKILL.md) | Structured, prioritized code-diff review (bugs, security, smells, spec-compliance). Vendored from [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills) (MIT) — it's a required dependency of `ship-feature`, bundled so one install covers it. |
 
 ## Install
 
@@ -50,10 +51,10 @@ users should also run the script (or install the deps below) once.
 
 | | Skill | Source | Fallback |
 |---|---|---|---|
-| Required | `grill-with-docs`, `to-prd`, `to-issues`, `triage`, `tdd` | [`mattpocock/skills`](https://github.com/mattpocock/skills) — `npx skills add mattpocock/skills` | — |
+| Required | `grill-with-docs`, `to-spec`, `to-tickets`, `triage`, `tdd` | [`mattpocock/skills`](https://github.com/mattpocock/skills) — `npx skills add mattpocock/skills` | — |
 | Required | worktrees, parallel-subagent fan-out, critical review (`superpowers:*`) | [superpowers](https://github.com/obra/superpowers) | — |
+| Required | code review (Opus subagent, diff vs base) | `code-reviewer` — **bundled in this repo** (vendored from [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills), MIT) | — |
 | Required | local worker dispatch | the harness's Agent/subagent tool | — |
-| Recommended | code review | a `code-reviewer` skill/subagent | a plain review subagent |
 | Recommended | commit + push + PR | `commit-commands:commit-push-pr` | `git` + `gh pr create` |
 | Recommended | flag over-engineering | `ponytail-review` ([ponytail](https://github.com/DietrichGebert/ponytail)) | skip the flag pass |
 | Recommended | apply simplifications; E2E verify | `simplify`, `verify` (built into Claude Code) | manual |

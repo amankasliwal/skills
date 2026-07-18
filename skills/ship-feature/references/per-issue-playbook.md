@@ -16,8 +16,8 @@ discussion are context; the brief is the contract. Don't widen scope beyond it.
 names your **base branch** — the feature base (spec/ADR/domain-doc base) for the first worker, or
 a prior worker's branch for later ones. You branch from it and PR onto it; it already contains the
 spec context and all prior work in the stack below you, so you inherit both for free. Before
-coding, skim the base branch's recent history and the parent PRD's done sibling issues so you
-**build on prior slices instead of duplicating them**.
+coding, skim the base branch's recent history and the parent spec's done sibling tickets so you
+**build on prior work instead of duplicating it**.
 
 ## 1. Branch correctly
 

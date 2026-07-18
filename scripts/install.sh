@@ -77,6 +77,7 @@ else
   warn "    claude plugin marketplace add DietrichGebert/ponytail && claude plugin install ponytail@ponytail"
 fi
 
+say "Note: 'code-reviewer' (required by ship-feature) is bundled in this repo — installed in step 1."
 say "Note: 'simplify' and 'verify' ship with current Claude Code — no install needed."
 echo
 ok "Done. Restart your agent, then say e.g. \"run my feature workflow on <X>\"."
