@@ -1,0 +1,8 @@
+# OpenAI / Codex interface metadata for this skill. The portable contract lives
+# in ../SKILL.md; this file only adds harness-specific display + invocation hints.
+interface:
+  display_name: "Ship Feature"
+  short_description: "Run a feature end-to-end: grill → PRD → issues → worker subagents → stacked PRs you review."
+policy:
+  # Model-invoked: fires on intent (e.g. "run my feature workflow", "finish this PR").
+  allow_implicit_invocation: true

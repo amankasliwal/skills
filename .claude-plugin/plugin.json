@@ -1,0 +1,14 @@
+{
+  "name": "amankasliwal-skills",
+  "version": "0.1.0",
+  "description": "Composable agent skills for real engineering. Currently: ship-feature — a thin conductor that runs a feature end-to-end into a stack of open PRs (grill → PRD → issues → triage → local worker subagents, TDD → review → verify, never merging).",
+  "author": {
+    "name": "Aman Kasliwal",
+    "url": "https://github.com/amankasliwal"
+  },
+  "homepage": "https://github.com/amankasliwal/skills",
+  "repository": "https://github.com/amankasliwal/skills",
+  "license": "MIT",
+  "keywords": ["engineering", "skills", "feature-workflow", "subagents", "stacked-prs", "tdd"],
+  "skills": ["./skills/ship-feature"]
+}

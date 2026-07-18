@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "amankasliwal",
+  "owner": {
+    "name": "Aman Kasliwal",
+    "url": "https://github.com/amankasliwal"
+  },
+  "description": "Aman Kasliwal's agent skills — cross-harness (Claude Code, Codex, and other Agent Skills-compatible harnesses), also installable as a Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "amankasliwal-skills",
+      "source": "./",
+      "description": "Composable agent skills for real engineering. Currently: ship-feature — a thin conductor that runs a feature end-to-end into a stack of open PRs.",
+      "category": "engineering",
+      "keywords": ["engineering", "skills", "feature-workflow", "subagents", "stacked-prs"]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "skill_name": "ship-feature",
+  "evals": [
+    {
+      "id": 1,
+      "name": "kickoff-new-feature",
+      "prompt": "I'm starting a new feature: add per-account rate limiting to our public API — each API key gets a configurable requests-per-minute budget, and over-budget requests get a 429 with a Retry-After header. Kick off my full feature workflow on this.",
+      "expected_output": "Routes to the Kickoff phase. Runs a preflight (notes the toolchain's per-repo config/setup may be needed if the tracker/label config is absent). Sequences grill-with-docs -> to-prd -> creates a feature base branch off the integration branch -> to-issues (noting to-issues itself marks slices HITL/AFK and labels AFK ones ready-for-agent) -> triage to write agent briefs -> dispatches LOCAL worker subagents (Agent tool, own worktrees, dependency waves) that open a STACK of PRs and never merge. Treats grill/PRD/slice-breakdown as autonomous after grilling. Defaults unsure issues to ready-for-human. Reports the stack, # ready-for-agent queued, # ready-for-human waiting. Stays a thin conductor (delegates, doesn't reimplement).",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "finish-pr",
+      "prompt": "Finish the PR for the rate-limiting 429-response issue — run the code review loop until there's no new feedback, then test it end to end against my local server.",
+      "expected_output": "Routes to the Finish phase (NOT kickoff — does not start grilling or make issues). Runs a code-review subagent (Opus, diff vs the PR's base branch) plus a simplicity pass <-> superpowers:receiving-code-review in a loop until no new actionable feedback, engaging critically rather than rubber-stamping; then E2E-verifies with real API calls against local, capturing evidence tied to the agent brief's acceptance criteria. Leaves the PR open (does not merge).",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "classify-and-dispatch",
+      "prompt": "The issues for the API-key-scoping feature are already created on the tracker. Classify each one HITL vs AFK and dispatch workers so the safe ones get implemented automatically as stacked PRs.",
+      "expected_output": "Enters Phase A at the classify/triage + dispatch steps (skips grill/prd/issues since issues exist). Maps HITL/AFK to the ready-for-human / ready-for-agent triage roles, defaults to ready-for-human when uncertain, writes agent briefs for ready-for-agent issues, then dispatches local worker subagents (own worktrees, dependency waves) that build a stack of open PRs from each agent brief and surface ready-for-human issues instead of implementing them. Never merges. Defers to the repo's issue-tracker + branch-naming config.",
+      "files": []
+    }
+  ]
+}
