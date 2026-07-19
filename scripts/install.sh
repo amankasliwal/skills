@@ -61,10 +61,10 @@ fi
 
 # Required + recommended plugins (best-effort; skip cleanly if the CLI is absent)
 if command -v claude >/dev/null 2>&1; then
-  claude plugin marketplace add obra/superpowers >/dev/null 2>&1 || true
   claude plugin marketplace add anthropics/claude-plugins-official >/dev/null 2>&1 || true
   claude plugin marketplace add DietrichGebert/ponytail >/dev/null 2>&1 || true
-  claude plugin install superpowers@superpowers >/dev/null 2>&1 && ok "superpowers installed" \
+  # superpowers ships via Anthropic's official marketplace (upstream: github.com/obra/superpowers)
+  claude plugin install superpowers@claude-plugins-official >/dev/null 2>&1 && ok "superpowers installed" \
     || warn "REQUIRED superpowers not installed — see https://github.com/obra/superpowers"
   claude plugin install commit-commands@claude-plugins-official >/dev/null 2>&1 && ok "commit-commands installed" \
     || warn "optional commit-commands not installed (fallback: git + gh pr create)"
@@ -72,7 +72,7 @@ if command -v claude >/dev/null 2>&1; then
     || warn "optional ponytail not installed (fallback: skip the over-engineering flag pass)"
 else
   warn "'claude' CLI not found — install plugins yourself:"
-  warn "    claude plugin marketplace add obra/superpowers && claude plugin install superpowers@superpowers   # REQUIRED"
+  warn "    claude plugin marketplace add anthropics/claude-plugins-official && claude plugin install superpowers@claude-plugins-official   # REQUIRED"
   warn "    claude plugin marketplace add anthropics/claude-plugins-official && claude plugin install commit-commands@claude-plugins-official"
   warn "    claude plugin marketplace add DietrichGebert/ponytail && claude plugin install ponytail@ponytail"
 fi

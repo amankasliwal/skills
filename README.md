@@ -19,13 +19,28 @@ native **Claude Code plugin**.
 
 ## Install
 
-### Option A — Claude Code plugin (self-updating, recommended for Claude Code)
+> ⚠️ Installing **only** `amankasliwal-skills` gives you `ship-feature` + `code-reviewer`, but **not**
+> its engine skills (mattpocock, superpowers) — Claude Code plugins don't cross-install skills from
+> other repos. Use a complete path below (**Option A** installs the engine skills as plugins too, or
+> **Option B** via the script), otherwise `ship-feature` stops at preflight asking you to install them.
 
-Installs the whole set as a managed bundle that updates when a new version ships:
+### Option A — Claude Code plugins (no shell script)
+
+`ship-feature`'s engine skills also ship as plugins, so you can install everything with `claude`
+alone — no `npx`, no clone. Each `plugin install` is a managed bundle that updates when a new version
+ships:
 
 ```bash
-claude plugin marketplace add amankasliwal/skills
-claude plugin install amankasliwal-skills@amankasliwal
+# ship-feature's required engine skills (grill / spec / tickets / triage / tdd; worktrees; review):
+claude plugin marketplace add mattpocock/skills && claude plugin install mattpocock-skills@mattpocock
+claude plugin marketplace add anthropics/claude-plugins-official && claude plugin install superpowers@claude-plugins-official
+
+# this repo — ship-feature + the bundled code-reviewer:
+claude plugin marketplace add amankasliwal/skills && claude plugin install amankasliwal-skills@amankasliwal
+
+# optional niceties (ship-feature degrades gracefully without them):
+claude plugin install commit-commands@claude-plugins-official   # marketplace already added above
+claude plugin marketplace add DietrichGebert/ponytail && claude plugin install ponytail@ponytail
 ```
 
 ### Option B — cross-harness script (Claude Code, Codex, others)
@@ -43,9 +58,10 @@ Restart your agent afterward so the new skills load. Re-run the script to refres
 
 ## Dependencies
 
-Skills compose other skills, so a skill's dependencies must be installed too. `scripts/install.sh`
-handles them; the plugin install does **not** pull a skill's cross-repo dependencies, so plugin
-users should also run the script (or install the deps below) once.
+Skills compose other skills, so a skill's dependencies must be installed too. **Option A** (all
+plugins) and `scripts/install.sh` both install them; installing *only* the `amankasliwal-skills`
+plugin does **not** pull the cross-repo engine skills, so pair it with the rest of Option A — or run
+the script — once.
 
 **`ship-feature`** drives:
 
